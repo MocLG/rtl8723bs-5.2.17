@@ -53,6 +53,8 @@
 #include <linux/ip.h>
 #include <linux/kthread.h>
 #include <linux/list.h>
+#include <linux/random.h>
+#include <linux/timer.h>
 #include <linux/vmalloc.h>
 
 #if (LINUX_VERSION_CODE <= KERNEL_VERSION(2, 5, 41))
@@ -122,6 +124,16 @@
 	#include <linux/in.h>
 	#include <linux/netlink.h>
 #endif /* CONFIG_BT_COEXIST_SOCKET_TRX */
+
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 0, 0))
+#ifndef from_timer
+#define from_timer(var, callback_timer, timer_fieldname) \
+	timer_container_of(var, callback_timer, timer_fieldname)
+#endif
+#define rtw_del_timer_sync(timer) timer_delete_sync(timer)
+#else
+#define rtw_del_timer_sync(timer) del_timer_sync(timer)
+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(7, 0, 0) */
 
 #ifdef CONFIG_USB_HCI
 	typedef struct urb   *PURB;
@@ -337,9 +349,9 @@ __inline static void _cancel_timer(_timer *ptimer, u8 *bcancelled)
 {
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0))							// --- AP ---
 
-	*bcancelled = del_timer_sync(&ptimer->t) == 1 ? 1 : 0;
+	*bcancelled = rtw_del_timer_sync(&ptimer->t) == 1 ? 1 : 0;
 #else
-	*bcancelled = del_timer_sync(ptimer) == 1 ? 1 : 0;
+	*bcancelled = rtw_del_timer_sync(ptimer) == 1 ? 1 : 0;
 #endif
 }
 

@@ -1759,6 +1759,9 @@ endif
 
 ifneq ($(KERNELRELEASE),)
 
+ccflags-y += $(EXTRA_CFLAGS)
+OBJECT_FILES_NON_STANDARD := y
+
 rtk_core :=	core/rtw_cmd.o \
 		core/rtw_security.o \
 		core/rtw_debug.o \
@@ -1890,4 +1893,3 @@ clean:
 	rm -fr *.mod.c *.mod *.o .*.cmd *.ko *~
 	rm -fr .tmp_versions
 endif
-
