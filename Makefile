@@ -153,7 +153,7 @@ CONFIG_PLATFORM_RTL8197D = n
 
 CONFIG_DRVEXT_MODULE = n
 
-export TopDIR ?= $(src)
+export TopDIR ?= $(CURDIR)
 
 ########### COMMON  #################################
 ifeq ($(CONFIG_GSPI_HCI), y)
@@ -1824,6 +1824,9 @@ export CONFIG_RTL8723BS = m
 all: modules
 
 modules:
+	@if grep -q '%\.mod: FORCE' "$(KSRC)/scripts/Makefile.build" 2>/dev/null; then \
+		$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C $(KSRC) M=$(shell pwd) $(MODULE_NAME).mod; \
+	fi
 	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS_COMPILE) -C $(KSRC) M=$(shell pwd)  modules
 
 strip:
