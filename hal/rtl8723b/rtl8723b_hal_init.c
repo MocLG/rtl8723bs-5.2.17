@@ -4219,10 +4219,8 @@ static void rtl8723b_fill_default_txdesc(
 
 #ifdef CONFIG_XMIT_ACK
 		/* CCX-TXRPT ack for xmit mgmt frames. */
-		if (pxmitframe->ack_report) {
-#ifdef DBG_CCX
-			RTW_INFO("%s set spe_rpt\n", __FUNCTION__);
-#endif
+		if (pxmitframe->ack_report || true) {
+			pr_err("%s set spe_rpt\n", __FUNCTION__);
 			SET_TX_DESC_SPE_RPT_8723B(pbuf, 1);
 			SET_TX_DESC_SW_DEFINE_8723B(pbuf, (u8)(GET_PRIMARY_ADAPTER(padapter)->xmitpriv.seq_no));
 		}
